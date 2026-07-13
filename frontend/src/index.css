@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  
+  --color-bg-app: var(--bg-app);
+  --color-bg-surface: var(--bg-surface);
+  --color-border-main: var(--border-main);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+}
+
+:root {
+  /* Light Mode Variables - base tokens */
+  --primary: #0062ff;
+  --primary-hover: #0052d4;
+  --secondary: #7c3aed;
+  --secondary-hover: #6d28d9;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --border-main: #e2e8f0;
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+}
+
+.dark {
+  /* Dark Mode Variables - base tokens */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --secondary: #a78bfa;
+  --secondary-hover: #c4b5fd;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  
+  --bg-app: #080d1a;
+  --bg-surface: #0f172a;
+  --border-main: #1e293b;
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-inverse: #080d1a;
+}
+
+/* Custom Base Styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-main);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Glassmorphism utility */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glassmorphism {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Gradient effects */
+.gradient-bg {
+  background: radial-gradient(circle at top right, rgba(0, 98, 255, 0.08), transparent 400px),
+              radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.05), transparent 400px);
+}
+
+.dark .gradient-bg {
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.07), transparent 500px),
+              radial-gradient(circle at bottom left, rgba(167, 139, 250, 0.04), transparent 500px);
+}
