@@ -149,33 +149,7 @@ Create a `.env` file by copying the example:
 cp .env.example .env
 ```
 
-Fill in your values in `.env`:
 
-```env
-PORT=5000
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-MONGODB_URI=mongodb://127.0.0.1:27017/bookstore
-
-JWT_SECRET=your_jwt_access_secret_here
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_here
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-
-COOKIE_SECRET=your_cookie_secret_here
-
-# Cloudinary (for image uploads)
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-
-# Email (SMTP)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=465
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-EMAIL_FROM=BookHaven <your_email@gmail.com>
-```
 
 Start the backend server:
 
@@ -296,6 +270,3 @@ This project is licensed under the **ISC License**.
 
 ---
 
-<div align="center">
-  Made with love by <a href="https://github.com/rishitha4412">rishitha4412</a>
-</div>
