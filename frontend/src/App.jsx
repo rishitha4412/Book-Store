@@ -25,7 +25,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 import DashboardPage from './pages/DashboardPage';
@@ -35,7 +34,7 @@ import SettingsPage from './pages/SettingsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-// Protected Route Component for Customer Dashboard
+// Protected Route Component for Customer Pages
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -47,7 +46,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user || user.role !== 'customer') {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -113,15 +112,42 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/books" element={<BooksPage />} />
                     <Route path="/books/:id" element={<BookDetailsPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPasswordPage />} />
-                    <Route path="/verify-email" element={<VerifyEmailPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/checkout-success" element={<CheckoutSuccessPage />} />
+                     <Route
+                       path="/cart"
+                       element={
+                         <ProtectedRoute>
+                           <CartPage />
+                         </ProtectedRoute>
+                       }
+                     />
+                     <Route
+                       path="/wishlist"
+                       element={
+                         <ProtectedRoute>
+                           <WishlistPage />
+                         </ProtectedRoute>
+                       }
+                     />
+                     <Route path="/login" element={<LoginPage />} />
+                     <Route path="/register" element={<RegisterPage />} />
+                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                     <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                     <Route
+                       path="/checkout"
+                       element={
+                         <ProtectedRoute>
+                           <CheckoutPage />
+                         </ProtectedRoute>
+                       }
+                     />
+                     <Route
+                       path="/checkout-success"
+                       element={
+                         <ProtectedRoute>
+                           <CheckoutSuccessPage />
+                         </ProtectedRoute>
+                       }
+                     />
                     
                     {/* Customer Protected Routes */}
                     <Route

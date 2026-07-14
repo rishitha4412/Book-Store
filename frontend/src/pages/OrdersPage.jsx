@@ -6,21 +6,39 @@ import {
   FiCheckCircle, FiChevronDown, FiChevronUp, FiMapPin, FiCreditCard 
 } from 'react-icons/fi';
 import { MOCK_ORDERS } from '../utils/mockData';
+import api from '../utils/api.js';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('All'); // 'All' | 'Processing' | 'Delivered'
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  // Load orders
+  // Load orders from backend
   useEffect(() => {
-    const saved = localStorage.getItem('bookstore_orders');
-    if (saved) {
-      setOrders(JSON.parse(saved));
-    } else {
-      setOrders(MOCK_ORDERS);
-      localStorage.setItem('bookstore_orders', JSON.stringify(MOCK_ORDERS));
-    }
+    const fetchMyOrders = async () => {
+      try {
+        const response = await api.get('/orders/my-orders');
+        const dbOrders = response.data.data.map((order) => ({
+          id: order._id,
+          date: order.createdAt.split('T')[0],
+          status: order.orderStatus,
+          total: order.totalPrice,
+          items: order.orderItems.map((item) => ({
+            id: item.book,
+            title: item.title,
+            coverImage: item.coverImage,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          shippingAddress: `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}`,
+          paymentMethod: order.paymentInfo?.method || 'COD',
+        }));
+        setOrders(dbOrders);
+      } catch (err) {
+        console.error('Failed to load user orders:', err);
+      }
+    };
+    fetchMyOrders();
   }, []);
 
   const toggleExpand = (id) => {

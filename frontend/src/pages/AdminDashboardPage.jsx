@@ -8,6 +8,7 @@ import {
 import toast from 'react-hot-toast';
 import { MOCK_BOOKS, MOCK_ORDERS } from '../utils/mockData';
 import { bookService } from '../services/bookService';
+import api from '../utils/api.js';
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'books' | 'categories'
@@ -25,37 +26,44 @@ export default function AdminDashboardPage() {
     reset
   } = useForm();
 
-  // Load data
+  // Load database catalog and customer orders
   useEffect(() => {
-    // Sync catalog books
-    const savedBooks = localStorage.getItem('bookstore_books');
-    if (savedBooks) {
+    const fetchAdminData = async () => {
       try {
-        const parsed = JSON.parse(savedBooks);
-        const containsOldCategory = parsed.some(b => b.category === 'Fiction' || b.category === 'Self-Improvement');
-        if (!containsOldCategory) {
-          setBooks(parsed);
-        } else {
-          setBooks(MOCK_BOOKS);
-          localStorage.setItem('bookstore_books', JSON.stringify(MOCK_BOOKS));
-        }
-      } catch (e) {
-        setBooks(MOCK_BOOKS);
-        localStorage.setItem('bookstore_books', JSON.stringify(MOCK_BOOKS));
+        const booksResponse = await bookService.getBooks({ limit: 100 });
+        setBooks(
+          booksResponse.books.map((b) => ({
+            id: b._id || b.id,
+            title: b.title,
+            author: b.author,
+            category: b.category,
+            price: b.price,
+            discount: b.discount,
+            coverImage: b.coverImage,
+            description: b.description,
+            stock: b.stock,
+            isbn: b.isbn,
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to load catalog books:', err);
       }
-    } else {
-      setBooks(MOCK_BOOKS);
-      localStorage.setItem('bookstore_books', JSON.stringify(MOCK_BOOKS));
-    }
 
-    // Sync checkout orders
-    const savedOrders = localStorage.getItem('bookstore_orders');
-    if (savedOrders) {
-      setOrders(JSON.parse(savedOrders));
-    } else {
-      setOrders(MOCK_ORDERS);
-      localStorage.setItem('bookstore_orders', JSON.stringify(MOCK_ORDERS));
-    }
+      try {
+        const ordersResponse = await api.get('/admin/orders?limit=100');
+        const formattedOrders = ordersResponse.data.data.orders.map((o) => ({
+          id: o._id,
+          date: o.createdAt.split('T')[0],
+          status: o.orderStatus,
+          total: o.totalPrice,
+          shippingAddress: `${o.shippingAddress.street}, ${o.shippingAddress.city}, ${o.shippingAddress.state} ${o.shippingAddress.postalCode}`,
+        }));
+        setOrders(formattedOrders);
+      } catch (err) {
+        console.error('Failed to load admin orders list:', err);
+      }
+    };
+    fetchAdminData();
   }, []);
 
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);

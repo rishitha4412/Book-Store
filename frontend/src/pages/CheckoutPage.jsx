@@ -8,6 +8,8 @@ import {
 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api.js';
+import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -49,44 +51,49 @@ export default function CheckoutPage() {
     }
   });
 
-  // Load addresses on mount
+  // Load addresses from database on mount
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate('/books');
       return;
     }
 
-    const saved = localStorage.getItem('bookstore_addresses');
-    let addrList = [];
-    if (saved) {
-      addrList = JSON.parse(saved);
-    } else {
-      addrList = [
-        {
-          id: 'addr-1',
-          fullName: user?.name || 'Jane Doe',
-          streetAddress: '123 Main Street, Apt 4B',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'United States',
-          phone: '123-456-7890',
-          isDefault: true
+    const fetchAddresses = async () => {
+      try {
+        const response = await api.get('/addresses');
+        const addrList = response.data.data.map((addr) => ({
+          id: addr._id || addr.id,
+          fullName: addr.name,
+          streetAddress: addr.street,
+          city: addr.city,
+          state: addr.state,
+          zipCode: addr.postalCode,
+          country: addr.country,
+          phone: addr.phone,
+          isDefault: addr.isDefault,
+        }));
+
+        setAddresses(addrList);
+
+        const defaultAddr = addrList.find((a) => a.isDefault) || addrList[0];
+        if (defaultAddr) {
+          setSelectedAddressId(defaultAddr.id);
+          // Pre-fill shipping form fields
+          setShippingValue('fullName', defaultAddr.fullName);
+          setShippingValue('streetAddress', defaultAddr.streetAddress);
+          setShippingValue('city', defaultAddr.city);
+          setShippingValue('state', defaultAddr.state);
+          setShippingValue('zipCode', defaultAddr.zipCode);
+          setShippingValue('country', defaultAddr.country);
+          setShippingValue('phone', defaultAddr.phone);
         }
-      ];
-    }
-    setAddresses(addrList);
-    const defaultAddr = addrList.find(a => a.isDefault) || addrList[0];
-    if (defaultAddr) {
-      setSelectedAddressId(defaultAddr.id);
-      // Pre-fill form
-      setShippingValue('fullName', defaultAddr.fullName);
-      setShippingValue('streetAddress', defaultAddr.streetAddress);
-      setShippingValue('city', defaultAddr.city);
-      setShippingValue('state', defaultAddr.state);
-      setShippingValue('zipCode', defaultAddr.zipCode);
-      setShippingValue('country', defaultAddr.country);
-      setShippingValue('phone', defaultAddr.phone);
+      } catch (err) {
+        console.error('Failed to load checkout addresses:', err);
+      }
+    };
+
+    if (user) {
+      fetchAddresses();
     }
   }, [cartItems, navigate, user, setShippingValue]);
 
@@ -132,28 +139,38 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Premium loading duration
-    
-    // Store mock order in LocalStorage to retrieve in Dashboard later
-    const selectedAddress = addresses.find(a => a.id === selectedAddressId) || {};
-    const mockOrderId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
-    const newOrder = {
-      id: mockOrderId,
-      date: new Date().toISOString().split('T')[0],
-      status: 'Processing',
-      total: cartTotal,
-      items: cartItems,
-      shippingAddress: `${selectedAddress.streetAddress}, ${selectedAddress.city}, ${selectedAddress.state} ${selectedAddress.zipCode}`,
-      paymentMethod: paymentMethod === 'card' ? 'Credit Card (•••• 1024)' : paymentMethod === 'paypal' ? 'PayPal Account' : 'Apple Pay'
-    };
+    try {
+      const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || {};
+      
+      const payload = {
+        shippingAddress: {
+          name: selectedAddress.fullName,
+          phone: selectedAddress.phone,
+          street: selectedAddress.streetAddress,
+          city: selectedAddress.city,
+          state: selectedAddress.state,
+          postalCode: selectedAddress.zipCode,
+          country: selectedAddress.country,
+        },
+        paymentInfo: {
+          id: `pay_mock_${Date.now().toString().substring(8)}`,
+          status: 'Succeeded',
+          method: paymentMethod === 'card' ? 'Card' : paymentMethod === 'paypal' ? 'PayPal' : 'ApplePay',
+        },
+        couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+      };
 
-    const storedOrders = localStorage.getItem('bookstore_orders');
-    const existingOrders = storedOrders ? JSON.parse(storedOrders) : [];
-    localStorage.setItem('bookstore_orders', JSON.stringify([newOrder, ...existingOrders]));
+      const response = await api.post('/orders', payload);
+      const createdOrder = response.data.data;
 
-    clearCart();
-    setIsSubmitting(false);
-    navigate('/checkout-success', { state: { orderId: mockOrderId } });
+      await clearCart();
+      setIsSubmitting(false);
+      navigate('/checkout-success', { state: { orderId: createdOrder._id } });
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to submit order.';
+      toast.error(message);
+      setIsSubmitting(false);
+    }
   };
 
   const currentAddress = addresses.find(a => a.id === selectedAddressId) || {};

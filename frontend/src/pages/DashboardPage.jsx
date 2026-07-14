@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { MOCK_ORDERS } from '../utils/mockData';
 import { bookService } from '../services/bookService';
+import api from '../utils/api.js';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -12,26 +13,30 @@ export default function DashboardPage() {
   const [orders, setOrders] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
 
-  // Load orders and recommendations
+  // Load orders and recommendations from backend
   useEffect(() => {
-    const saved = localStorage.getItem('bookstore_orders');
-    if (saved) {
-      setOrders(JSON.parse(saved));
-    } else {
-      setOrders(MOCK_ORDERS);
-      localStorage.setItem('bookstore_orders', JSON.stringify(MOCK_ORDERS));
-    }
-
-    // Load recommendations
-    const loadRecs = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const featured = await bookService.getFeaturedBooks() || [];
+        const response = await api.get('/orders/my-orders');
+        const dbOrders = response.data.data.map((order) => ({
+          id: order._id,
+          total: order.totalPrice,
+          status: order.orderStatus,
+          date: order.createdAt.split('T')[0],
+        }));
+        setOrders(dbOrders);
+      } catch (err) {
+        console.error('Failed to load dashboard orders:', err);
+      }
+
+      try {
+        const featured = (await bookService.getFeaturedBooks()) || [];
         setRecommendations(featured.slice(0, 3));
       } catch (err) {
-        console.error("Error loading recommendations", err);
+        console.error('Error loading recommendations', err);
       }
     };
-    loadRecs();
+    fetchDashboardData();
   }, []);
 
   const totalSpent = orders.reduce((acc, curr) => acc + curr.total, 0);

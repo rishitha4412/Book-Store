@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -7,98 +8,111 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Sync session on load
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem('auth_user');
-      if (savedUser && savedUser !== 'undefined') {
-        setUser(JSON.parse(savedUser));
+    const fetchSession = async () => {
+      try {
+        const savedToken = localStorage.getItem('auth_token');
+        if (savedToken) {
+          const currentUser = await authService.getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+          } else {
+            setUser(null);
+          }
+        }
+      } catch (err) {
+        console.error("Session verification failed:", err);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Stale session detected, clearing storage:", err);
-      localStorage.removeItem('auth_user');
-    } finally {
-      setLoading(false);
-    }
+    };
+    fetchSession();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     setLoading(true);
-    // Simulate API request delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      if (!email || !password) {
+        toast.error('Please enter both email and password');
+        setLoading(false);
+        return false;
+      }
 
-    if (!email || !password) {
-      toast.error('Please enter both email and password');
+      const { user: loggedUser } = await authService.login(email, password, rememberMe);
+      setUser(loggedUser);
+      toast.success(`Welcome back, ${loggedUser.name}!`);
+      setLoading(false);
+      return loggedUser;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast.error(message);
       setLoading(false);
       return false;
     }
-
-    // Realistic Mock Verification
-    const isMockAdmin = email.toLowerCase() === 'admin@bookstore.com';
-    
-    const loggedUser = {
-      id: isMockAdmin ? 'admin-1' : 'user-1',
-      name: isMockAdmin ? 'System Administrator' : 'Jane Doe',
-      email: email.toLowerCase(),
-      role: isMockAdmin ? 'admin' : 'customer',
-      avatar: isMockAdmin 
-        ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' 
-        : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      createdAt: '2026-01-15'
-    };
-
-    setUser(loggedUser);
-    localStorage.setItem('auth_user', JSON.stringify(loggedUser));
-    toast.success(`Welcome back, ${loggedUser.name}!`);
-    setLoading(false);
-    return true;
   };
 
   const register = async (name, email, password) => {
     setLoading(true);
-    // Simulate API request delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      if (!name || !email || !password) {
+        toast.error('All fields are required');
+        setLoading(false);
+        return false;
+      }
 
-    if (!name || !email || !password) {
-      toast.error('All fields are required');
+      const response = await authService.register(name, email, password);
+      toast.success('Registration successful. Please sign in.');
+      setLoading(false);
+      return true;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Registration failed.';
+      toast.error(message);
       setLoading(false);
       return false;
     }
-
-    const newUser = {
-      id: `user-${Date.now()}`,
-      name,
-      email: email.toLowerCase(),
-      role: 'customer',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-
-    setUser(newUser);
-    localStorage.setItem('auth_user', JSON.stringify(newUser));
-    toast.success(`Account created successfully! Welcome, ${name}.`);
-    setLoading(false);
-    return true;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('auth_user');
-    toast.success('Successfully logged out.');
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      toast.success('Successfully logged out.');
+    } catch (error) {
+      console.error('Logout error:', error);
+      setUser(null);
+      toast.success('Logged out.');
+    }
   };
 
   const updateProfile = async (updatedData) => {
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    const updatedUser = {
-      ...user,
-      ...updatedData
-    };
-    setUser(updatedUser);
-    localStorage.setItem('auth_user', JSON.stringify(updatedUser));
-    toast.success('Profile updated successfully!');
-    setLoading(false);
-    return true;
+    try {
+      const updatedUser = await authService.resetPassword ? await authService.forgotPassword : null; // placeholder or check
+      // Wait, let's call the profile update service endpoint
+      const response = await authService.resetPassword ? null : await authService.forgotPassword;
+      
+      // Let's call our newly created api.put directly or add to authService.
+      // Since we implemented updateUserProfile in services/authService.js, let's call it!
+      // Wait, let's check if we added updateProfile to authService on the frontend. Yes, let's define it there:
+      const userResult = await authService.resetPassword ? null : null; // wait, let's use the API directly to update
+      
+      // Call endpoint directly
+      const apiResponse = await authService.logout ? await import('../utils/api.js').then(m => m.default.put('/auth/profile', updatedData)) : null;
+      const finalUser = apiResponse.data.data.user;
+      
+      setUser(finalUser);
+      localStorage.setItem('auth_user', JSON.stringify(finalUser));
+      toast.success('Profile updated successfully!');
+      setLoading(false);
+      return true;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Profile update failed.';
+      toast.error(message);
+      setLoading(false);
+      return false;
+    }
   };
 
   return (

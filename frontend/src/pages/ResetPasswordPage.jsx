@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiLock, FiCheckCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { authService } from '../services/authService';
 
 export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { token } = useParams();
 
   const {
     register,
@@ -25,11 +27,17 @@ export default function ResetPasswordPage() {
   const newPassword = watch('password');
 
   const onSubmit = async (data) => {
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setLoading(false);
-    setSuccess(true);
-    toast.success('Password updated successfully!');
+    try {
+      setLoading(true);
+      await authService.resetPassword(token, data.password);
+      setSuccess(true);
+      toast.success('Password updated successfully!');
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to reset password. Token may be invalid or expired.';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,8 +76,8 @@ export default function ResetPasswordPage() {
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {
-                        value: 6,
-                        message: 'Password must be at least 6 characters'
+                        value: 8,
+                        message: 'Password must be at least 8 characters'
                       }
                     })}
                   />

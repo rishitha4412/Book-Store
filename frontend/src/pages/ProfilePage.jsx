@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api.js';
 
 export default function ProfilePage() {
   const { user, updateProfile, loading } = useAuth();
@@ -22,39 +23,33 @@ export default function ProfilePage() {
   const [editingAddress, setEditingAddress] = useState(null);
 
   // Initial Addresses
-  const [addresses, setAddresses] = useState(() => {
-    const saved = localStorage.getItem('bookstore_addresses');
-    if (saved) return JSON.parse(saved);
-    return [
-      {
-        id: 'addr-1',
-        fullName: user?.name || 'Jane Doe',
-        streetAddress: '123 Main Street, Apt 4B',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'United States',
-        phone: '123-456-7890',
-        isDefault: true
-      },
-      {
-        id: 'addr-2',
-        fullName: user?.name || 'Jane Doe',
-        streetAddress: '789 Business Parkway',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94107',
-        country: 'United States',
-        phone: '987-654-3210',
-        isDefault: false
-      }
-    ];
-  });
+  const [addresses, setAddresses] = useState([]);
 
-  // Sync addresses to localStorage
+  // Fetch addresses from backend database
   useEffect(() => {
-    localStorage.setItem('bookstore_addresses', JSON.stringify(addresses));
-  }, [addresses]);
+    const fetchAddresses = async () => {
+      if (user) {
+        try {
+          const response = await api.get('/addresses');
+          const mapped = response.data.data.map((addr) => ({
+            id: addr._id || addr.id,
+            fullName: addr.name,
+            streetAddress: addr.street,
+            city: addr.city,
+            state: addr.state,
+            zipCode: addr.postalCode,
+            country: addr.country,
+            phone: addr.phone,
+            isDefault: addr.isDefault,
+          }));
+          setAddresses(mapped);
+        } catch (err) {
+          console.error('Failed to load user addresses:', err);
+        }
+      }
+    };
+    fetchAddresses();
+  }, [user]);
 
   // Form for Personal Details
   const {
@@ -176,40 +171,94 @@ export default function ProfilePage() {
     setIsAddressModalOpen(true);
   };
 
-  const onAddressSubmit = (data) => {
-    if (editingAddress) {
-      // Edit mode
-      setAddresses(prev => prev.map(addr => addr.id === editingAddress.id ? { ...addr, ...data } : addr));
-      toast.success("Address updated successfully!");
-    } else {
-      // Add mode
-      const newAddr = {
-        id: `addr-${Date.now()}`,
-        ...data,
-        isDefault: addresses.length === 0
+  const onAddressSubmit = async (data) => {
+    try {
+      const payload = {
+        name: data.fullName,
+        street: data.streetAddress,
+        city: data.city,
+        state: data.state,
+        postalCode: data.zipCode,
+        country: data.country,
+        phone: data.phone,
       };
-      setAddresses(prev => [...prev, newAddr]);
-      toast.success("New address added!");
+
+      if (editingAddress) {
+        // Edit mode
+        payload.isDefault = editingAddress.isDefault;
+        await api.put(`/addresses/${editingAddress.id}`, payload);
+        toast.success('Address updated successfully!');
+      } else {
+        // Add mode
+        payload.isDefault = addresses.length === 0;
+        await api.post('/addresses', payload);
+        toast.success('New address added!');
+      }
+
+      // Re-fetch addresses to update local state cleanly
+      const response = await api.get('/addresses');
+      const mapped = response.data.data.map((addr) => ({
+        id: addr._id || addr.id,
+        fullName: addr.name,
+        streetAddress: addr.street,
+        city: addr.city,
+        state: addr.state,
+        zipCode: addr.postalCode,
+        country: addr.country,
+        phone: addr.phone,
+        isDefault: addr.isDefault,
+      }));
+      setAddresses(mapped);
+      setIsAddressModalOpen(false);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save address.');
     }
-    setIsAddressModalOpen(false);
   };
 
-  const handleDeleteAddress = (id) => {
-    const target = addresses.find(a => a.id === id);
-    setAddresses(prev => prev.filter(addr => addr.id !== id));
-    toast.success("Address removed.");
+  const handleDeleteAddress = async (id) => {
+    try {
+      await api.delete(`/addresses/${id}`);
+      toast.success('Address removed.');
 
-    // If we deleted the default, set default to the first remaining
-    if (target?.isDefault && addresses.length > 1) {
-      const remaining = addresses.filter(addr => addr.id !== id);
-      remaining[0].isDefault = true;
-      setAddresses(remaining);
+      const response = await api.get('/addresses');
+      const mapped = response.data.data.map((addr) => ({
+        id: addr._id || addr.id,
+        fullName: addr.name,
+        streetAddress: addr.street,
+        city: addr.city,
+        state: addr.state,
+        zipCode: addr.postalCode,
+        country: addr.country,
+        phone: addr.phone,
+        isDefault: addr.isDefault,
+      }));
+      setAddresses(mapped);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to remove address.');
     }
   };
 
-  const handleSetDefaultAddress = (id) => {
-    setAddresses(prev => prev.map(addr => ({ ...addr, isDefault: addr.id === id })));
-    toast.success("Default shipping address updated.");
+  const handleSetDefaultAddress = async (id) => {
+    try {
+      await api.put(`/addresses/${id}`, { isDefault: true });
+      toast.success('Default shipping address updated.');
+
+      const response = await api.get('/addresses');
+      const mapped = response.data.data.map((addr) => ({
+        id: addr._id || addr.id,
+        fullName: addr.name,
+        streetAddress: addr.street,
+        city: addr.city,
+        state: addr.state,
+        zipCode: addr.postalCode,
+        country: addr.country,
+        phone: addr.phone,
+        isDefault: addr.isDefault,
+      }));
+      setAddresses(mapped);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to set default address.');
+    }
   };
 
   return (

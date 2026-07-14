@@ -21,10 +21,9 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
-    const success = await login(data.email, data.password);
-    if (success) {
-      const isMockAdmin = data.email.toLowerCase() === 'admin@bookstore.com';
-      if (isMockAdmin) {
+    const userObj = await login(data.email, data.password);
+    if (userObj) {
+      if (userObj.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/dashboard');
@@ -53,13 +52,6 @@ export default function LoginPage() {
           <p className="text-sm text-text-muted mt-2">
             Sign in to manage your library and checkout books
           </p>
-        </div>
-
-        {/* Demo credentials tip */}
-        <div className="mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/10 text-xs text-text-muted">
-          <p className="font-bold text-primary mb-1">Demo Credentials:</p>
-          <p>Customer: <span className="font-semibold text-text-main">customer@bookstore.com</span> / any password</p>
-          <p>Admin: <span className="font-semibold text-text-main">admin@bookstore.com</span> / any password</p>
         </div>
 
         {/* Form */}
@@ -111,8 +103,8 @@ export default function LoginPage() {
                 {...register('password', {
                   required: 'Password is required',
                   minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters'
+                    value: 8,
+                    message: 'Password must be at least 8 characters'
                   }
                 })}
               />

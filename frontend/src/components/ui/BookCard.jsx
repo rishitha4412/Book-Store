@@ -31,6 +31,7 @@ export default function BookCard({ book, onQuickView, layout = 'grid' }) {
             alt={book.title}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=400&q=80'; }}
           />
 
           {hasDiscount && (
@@ -150,6 +151,7 @@ export default function BookCard({ book, onQuickView, layout = 'grid' }) {
           alt={book.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=400&q=80'; }}
         />
 
         {/* Discount Badge */}

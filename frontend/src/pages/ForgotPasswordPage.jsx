@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiMail, FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { authService } from '../services/authService';
 
 export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -18,11 +19,17 @@ export default function ForgotPasswordPage() {
   });
 
   const onSubmit = async (data) => {
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setLoading(false);
-    setSubmitted(true);
-    toast.success('Password reset link sent!');
+    try {
+      setLoading(true);
+      await authService.forgotPassword(data.email);
+      setSubmitted(true);
+      toast.success('Password reset link sent!');
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to request password reset link.';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

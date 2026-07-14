@@ -17,14 +17,15 @@ export default function RegisterPage() {
     defaultValues: {
       name: '',
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: '',
     }
   });
 
   const onSubmit = async (data) => {
     const success = await authRegister(data.name, data.email, data.password);
     if (success) {
-      navigate('/dashboard');
+      navigate('/login');
     }
   };
 
@@ -117,14 +118,36 @@ export default function RegisterPage() {
                 {...register('password', {
                   required: 'Password is required',
                   minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters'
+                    value: 8,
+                    message: 'Password must be at least 8 characters'
                   }
                 })}
               />
             </div>
             {errors.password && (
               <p className="text-xs text-danger font-semibold mt-1">{errors.password.message}</p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-text-main uppercase tracking-wider">Confirm Password</label>
+            <div className="relative">
+              <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+              <input
+                type="password"
+                placeholder="••••••••"
+                className={`w-full pl-11 pr-4 py-3 bg-bg-app border rounded-xl text-sm text-text-main focus:outline-none transition-colors ${
+                  errors.confirmPassword ? 'border-danger focus:border-danger' : 'border-border-main focus:border-primary'
+                }`}
+                {...register('confirmPassword', {
+                  required: 'Please confirm your password',
+                  validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                })}
+              />
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-xs text-danger font-semibold mt-1">{errors.confirmPassword.message}</p>
             )}
           </div>
 

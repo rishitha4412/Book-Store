@@ -1,41 +1,58 @@
-const simulateDelay = (ms = 500) => new Promise((resolve) => setTimeout(resolve, ms));
+import api from '../utils/api.js';
 
 export const authService = {
-  login: async (email, password) => {
-    await simulateDelay(800);
-    // Simple verification helper
-    const isAdmin = email.toLowerCase() === 'admin@bookstore.com';
-    return {
-      token: 'mock-jwt-token-xyz',
-      user: {
-        id: isAdmin ? 'admin-1' : 'user-1',
-        name: isAdmin ? 'System Administrator' : 'Jane Doe',
-        email: email.toLowerCase(),
-        role: isAdmin ? 'admin' : 'customer',
-        avatar: isAdmin 
-          ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' 
-          : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      }
-    };
+  // Login user and store token/user details in browser caching
+  login: async (email, password, rememberMe = false) => {
+    const response = await api.post('/auth/login', { email, password, rememberMe });
+    const { token, user } = response.data.data;
+    
+    // Maintain local caching for components requiring instant synchronous profile states
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('auth_user', JSON.stringify(user));
+    
+    return { token, user };
   },
 
+  // Register a new customer
   register: async (name, email, password) => {
-    await simulateDelay(800);
-    return {
-      token: 'mock-jwt-token-xyz',
-      user: {
-        id: `user-${Date.now()}`,
-        name,
-        email: email.toLowerCase(),
-        role: 'customer',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      }
-    };
+    const response = await api.post('/auth/register', { name, email, password });
+    return response.data;
   },
 
+  // Fetch current user details via session cookie
   getCurrentUser: async () => {
-    await simulateDelay(200);
-    const savedUser = localStorage.getItem('auth_user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const response = await api.get('/auth/me');
+      const { user } = response.data.data;
+      localStorage.setItem('auth_user', JSON.stringify(user));
+      return user;
+    } catch (error) {
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_token');
+      return null;
+    }
+  },
+
+  // Terminate user session
+  logout: async () => {
+    await api.post('/auth/logout');
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('bookstore_cart');
+    localStorage.removeItem('bookstore_wishlist');
+    return true;
+  },
+
+
+  // Request password reset link
+  forgotPassword: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  // Reset password using token
+  resetPassword: async (token, password) => {
+    const response = await api.patch(`/auth/reset-password/${token}`, { password });
+    return response.data;
   }
 };

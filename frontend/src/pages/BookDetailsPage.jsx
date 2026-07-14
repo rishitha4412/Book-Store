@@ -227,6 +227,7 @@ export default function BookDetailsPage() {
                   transform: isZoomed ? 'scale(1.8)' : 'scale(1)',
                   transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
                 }}
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=400&q=80'; }}
               />
               {hasDiscount && (
                 <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-md z-10 animate-pulse">
@@ -245,7 +246,7 @@ export default function BookDetailsPage() {
                     activeImage === img ? 'border-primary shadow-md scale-102' : 'border-border-main/50 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`Preview ${index}`} className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=400&q=80'; }} />
                 </button>
               ))}
             </div>
