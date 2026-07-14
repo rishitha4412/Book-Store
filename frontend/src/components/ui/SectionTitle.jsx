@@ -10,9 +10,9 @@ export default function SectionTitle({ title, subtitle, align = 'center' }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-100px' }}
       transition={{ duration: 0.5 }}
-      className={`max-w-3xl mb-12 ${isCenter ? 'mx-auto text-center' : 'text-left'}`}
+      className={`max-w-3xl mb-8 sm:mb-12 ${isCenter ? 'mx-auto text-center' : 'text-left'}`}
     >
-      <h2 className="text-3xl sm:text-4xl font-extrabold text-text-main tracking-tight leading-none mb-3">
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-text-main tracking-tight leading-tight mb-3">
         {title}
       </h2>
       {subtitle && (

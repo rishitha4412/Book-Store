@@ -6,10 +6,10 @@ export default function Footer() {
   return (
     <footer className="border-t border-border-main/50 bg-bg-surface/30 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-6 md:gap-12">
           
           {/* Brand Col */}
-          <div className="md:col-span-4 space-y-4">
+          <div className="col-span-2 md:col-span-4 space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <div className="p-2 bg-primary text-white rounded-lg">
                 <FiBookOpen className="w-4 h-4" />

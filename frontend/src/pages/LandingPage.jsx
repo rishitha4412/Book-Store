@@ -82,7 +82,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen gradient-bg">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <motion.div
@@ -94,13 +94,13 @@ export default function LandingPage() {
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary mb-6">
                 <FiBookOpen className="w-3.5 h-3.5" /> Direct Publisher Editions
               </span>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-text-main tracking-tight leading-none mb-6">
-                Expand your mind with <br />
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold text-text-main tracking-tight leading-tight mb-4 sm:mb-6">
+                Expand your mind with{' '}
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   exceptional books.
                 </span>
               </h1>
-              <p className="text-base sm:text-lg text-text-muted mb-8 max-w-xl leading-relaxed">
+              <p className="text-sm sm:text-base lg:text-lg text-text-muted mb-6 sm:mb-8 max-w-xl leading-relaxed">
                 Explore our curated catalog of technical blueprints, business bestsellers, and literary masterpieces designed to support your development.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -184,9 +184,9 @@ export default function LandingPage() {
       </section>
 
       {/* 2. Trusted By & Statistics Section */}
-      <section className="py-16 border-y border-border-main bg-bg-surface/30 backdrop-blur-md">
+      <section className="py-10 sm:py-16 border-y border-border-main bg-bg-surface/30 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {loading ? (
               Array.from({ length: 4 }).map((_, idx) => (
                 <div key={idx} className="h-24 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -206,13 +206,13 @@ export default function LandingPage() {
       </section>
 
       {/* 3. Featured Categories */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <SectionTitle 
           title="Browse Curated Categories" 
-          subtitle="Quickly navigate through our top categories containing modern technical specifications and classic text files."
+          subtitle="Quickly navigate through our top categories."
         />
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
               <div key={idx} className="h-48 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -226,21 +226,21 @@ export default function LandingPage() {
       </section>
 
       {/* 4. Featured Books Grid */}
-      <section id="featured" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
-        <div className="flex flex-col sm:flex-row justify-between items-baseline mb-12 gap-4">
+      <section id="featured" className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
+        <div className="flex flex-row justify-between items-center mb-6 sm:mb-12 gap-4">
           <div>
-            <h2 className="text-3xl font-extrabold text-text-main tracking-tight">Featured Masterpieces</h2>
-            <p className="text-sm text-text-muted mt-2">Handpicked titles curated by our principal editors.</p>
+            <h2 className="text-xl sm:text-3xl font-extrabold text-text-main tracking-tight">Featured Masterpieces</h2>
+            <p className="text-xs sm:text-sm text-text-muted mt-1 sm:mt-2">Handpicked titles by our editors.</p>
           </div>
           <Link
             to="/books"
-            className="text-sm font-bold text-primary hover:text-primary-hover flex items-center gap-1 hover:underline"
+            className="text-xs sm:text-sm font-bold text-primary hover:text-primary-hover flex items-center gap-1 shrink-0 hover:underline"
           >
-            View all library items <FiArrowRight />
+            View all <FiArrowRight />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="h-96 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -254,12 +254,12 @@ export default function LandingPage() {
       </section>
 
       {/* 5. Best Sellers Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
         <SectionTitle 
           title="Best Sellers" 
-          subtitle="The highest-selling books chosen by thousands of developers and professionals around the globe."
+          subtitle="Highest-selling books chosen by developers worldwide."
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="h-96 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -273,12 +273,12 @@ export default function LandingPage() {
       </section>
 
       {/* 6. Trending Books Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
         <SectionTitle 
           title="Trending Now" 
-          subtitle="Discover publications experiencing a surge in readership and high praise this week."
+          subtitle="Publications experiencing a surge in readership this week."
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="h-96 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -292,12 +292,12 @@ export default function LandingPage() {
       </section>
 
       {/* 7. New Arrivals Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
         <SectionTitle 
           title="New Arrivals" 
-          subtitle="Explore the latest literature additions to our catalog directly off the press."
+          subtitle="Latest literature additions to our catalog."
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {loading ? (
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="h-96 bg-border-main/20 animate-pulse rounded-2xl"></div>
@@ -311,51 +311,51 @@ export default function LandingPage() {
       </section>
 
       {/* 8. Why Choose BookStore Section */}
-      <section className="py-20 bg-bg-surface border-y border-border-main">
+      <section className="py-12 sm:py-20 bg-bg-surface border-y border-border-main">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionTitle 
             title="Why Choose BookStore" 
-            subtitle="Providing a premium digital purchasing workflow optimized for quality and scale."
+            subtitle="A premium purchasing workflow optimized for quality."
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center p-6 space-y-4">
-              <div className="inline-flex p-4 bg-primary/10 text-primary rounded-2xl">
-                <FiTruck className="w-6 h-6" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
+            <div className="text-center p-4 sm:p-6 space-y-2 sm:space-y-4">
+              <div className="inline-flex p-3 sm:p-4 bg-primary/10 text-primary rounded-xl sm:rounded-2xl">
+                <FiTruck className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-extrabold text-lg text-text-main">Free Express Shipping</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
-                Enjoy complimentary express delivery on orders above $35. Packaged in custom secure boxes.
+              <h3 className="font-extrabold text-sm sm:text-lg text-text-main leading-tight">Free Express Shipping</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed hidden sm:block">
+                Complimentary express delivery on orders above $35.
               </p>
             </div>
             
-            <div className="text-center p-6 space-y-4">
-              <div className="inline-flex p-4 bg-primary/10 text-primary rounded-2xl">
-                <FiShield className="w-6 h-6" />
+            <div className="text-center p-4 sm:p-6 space-y-2 sm:space-y-4">
+              <div className="inline-flex p-3 sm:p-4 bg-primary/10 text-primary rounded-xl sm:rounded-2xl">
+                <FiShield className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-extrabold text-lg text-text-main">Secure Shopping</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
-                Stripe integrated gateway. We support multi-factor auth and direct PCI compliant checkouts.
+              <h3 className="font-extrabold text-sm sm:text-lg text-text-main leading-tight">Secure Shopping</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed hidden sm:block">
+                PCI compliant checkouts with multi-factor auth.
               </p>
             </div>
 
-            <div className="text-center p-6 space-y-4">
-              <div className="inline-flex p-4 bg-primary/10 text-primary rounded-2xl">
-                <FiBookOpen className="w-6 h-6" />
+            <div className="text-center p-4 sm:p-6 space-y-2 sm:space-y-4">
+              <div className="inline-flex p-3 sm:p-4 bg-primary/10 text-primary rounded-xl sm:rounded-2xl">
+                <FiBookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-extrabold text-lg text-text-main">Premium Collection</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
-                Hand-curated libraries from MIT, O'Reilly, and Harper Collins. Only the finest books.
+              <h3 className="font-extrabold text-sm sm:text-lg text-text-main leading-tight">Premium Collection</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed hidden sm:block">
+                Curated from MIT, O'Reilly, and Harper Collins.
               </p>
             </div>
 
-            <div className="text-center p-6 space-y-4">
-              <div className="inline-flex p-4 bg-primary/10 text-primary rounded-2xl">
-                <FiRotateCcw className="w-6 h-6" />
+            <div className="text-center p-4 sm:p-6 space-y-2 sm:space-y-4">
+              <div className="inline-flex p-3 sm:p-4 bg-primary/10 text-primary rounded-xl sm:rounded-2xl">
+                <FiRotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-extrabold text-lg text-text-main">Easy returns</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
-                Return undamaged volumes within 30 days for a full refund. Generate shipping labels in seconds.
+              <h3 className="font-extrabold text-sm sm:text-lg text-text-main leading-tight">Easy Returns</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed hidden sm:block">
+                Return within 30 days for a full refund.
               </p>
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function LandingPage() {
       </section>
 
       {/* 9. Customer Testimonials Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <SectionTitle 
           title="What Our Readers Say" 
           subtitle="Trusted by lead frontend engineers, product designers, and technical writers worldwide."
@@ -435,7 +435,7 @@ export default function LandingPage() {
       </section>
 
       {/* 10. Newsletter Subscription Section */}
-      <section className="py-20 px-4 max-w-7xl mx-auto border-t border-border-main/40">
+      <section className="py-12 sm:py-20 px-4 max-w-7xl mx-auto border-t border-border-main/40">
         <div className="glassmorphism border border-border-main rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
           <div className="max-w-2xl mx-auto relative z-10 space-y-6">
             <div className="inline-flex p-3 bg-primary/10 text-primary rounded-2xl">
@@ -469,7 +469,7 @@ export default function LandingPage() {
       </section>
 
       {/* 11. FAQ Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border-main/40">
         <SectionTitle 
           title="Frequently Asked Questions" 
           subtitle="Answers to common inquiries regarding shipments, security checks, and ebook access codes."
