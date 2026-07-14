@@ -1,5 +1,6 @@
 # Dependencies
 frontend/node_modules/
+backend/node_modules/
 node_modules/
 
 # Production build outputs
@@ -17,6 +18,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Environment variables (sensitive secrets - never commit!)
+backend/.env
+.env
+
+# Backend logs
+backend/logs/
 
 # Editor directories and files
 .vscode/*
