@@ -66,7 +66,18 @@ app.use(compression());
 // 7. Global Middleware - Request Logging
 app.use(requestLogger);
 
-// 8. Base Health Check Route
+// 8. Root Route - API Info
+app.get('/', (req, res) => {
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'BookHaven API is running 📚',
+    version: 'v1',
+    docs: '/api/v1/health',
+    endpoints: '/api/v1',
+  });
+});
+
+// 9. Base Health Check Route
 app.get('/api/v1/health', (req, res) => {
   res.status(HTTP_STATUS.OK).json({
     success: true,
